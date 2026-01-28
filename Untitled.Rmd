@@ -1,0 +1,115 @@
+---
+title: "Assignment 2"
+author: "Harsimran Ghai"
+date: "2026-01-28"
+output: html_document
+---
+
+---
+title: 'Assignment 1: CHEP 898'
+author: "Harsimran Ghai"
+date: "2026-01-24"
+output: word_document
+---
+
+#loading packages and libraries
+```{r}
+library (tidyverse)
+install.packages ("janitor",repos ="https://cloud.r-project.org")
+library (janitor)
+library (ggplot2)
+install.packages ("psych",repos ="https://cloud.r-project.org")
+library(psych)
+```
+
+# loading the data into R
+```{r}
+Demograph <- read_csv ("assignment1_can_path_demographics.csv")
+Health <- read_csv ("assignment1_can_path_health.csv")
+```
+
+# Look into the dataset/ structure of the dataset
+```{r}
+glimpse (Demograph)
+glimpse (Health)
+```
+The demograph dataset has three variables namely Subject ID, Gender and Income, whereas Income dataset has the following variables namely general health, vegetable quantity, Fruits quantity, physical activity, asthma and subject ID. 
+
+#checking the structure of the variables
+```{r}
+str(Demograph)
+str (Health)
+```
+
+The data is incorrectly characterizing categorical variables as numeric, therefore, the structure of categorical variables will be changed to factor, so that in future we can run the regression or other statistical techniques safely for variables that are categorical. Even though I am converting the variables into factor, but I am unable to label it as I need the codebook of the data to see which value correspond to what level of the category,.
+
+#Correction for categorical variables
+```{r}
+Demograph$SDC_GENDER <- factor (Demograph$SDC_GENDER)
+Demograph$SDC_INCOME <- factor (Demograph$SDC_INCOME)
+Health$HS_GEN_HEALTH <- factor (Health$HS_GEN_HEALTH)
+Health$DIS_ASTHMA_EVER <- factor (Health$DIS_ASTHMA_EVER)
+```
+
+#Inspecting duplicates
+```{r}
+get_dupes(Demograph)
+get_dupes(Health)
+```
+No duplicate observation were found in demograph and Health dataset.
+
+#Checking outliers in dataset
+```{r}
+# Select numeric variables
+boxplot (Health$PA_TOTAL_SHORT, main="PA_TOTAL_SHORT")
+boxplot (Health$NUT_VEG_QTY, main="Vegetable quantity")
+boxplot (Health$NUT_FRUITS_QTY, main="Fruits quantity")
+```
+All continuous variables that is fruits, vegetables and physical activities have potential outliers based on the boxplots.  
+
+
+# Merging two datasets together using subject ID 
+
+```{r}
+Final_data <- Demograph %>% left_join(Health, by ="ID")
+```
+
+#Validating the merging (Checking number of rows and variables in the dataset)
+```{r}
+nrow(Demograph)
+nrow(Health)
+nrow (Final_data)
+```
+ The new data has same number of rows as the orignal dataset has, indicating same observations. The number of variables are 8 in the final dataset, indicating the two variables in the demograph dataset, merged successfully with the health dataset.
+ 
+#Summary of data
+```{r}
+glimpse (Final_data)
+```
+
+#Checking missing data
+```{r}
+any(is.na(Final_data))
+colSums(is.na(Final_data))
+
+```
+Many observations are missing for each variables except gender and therefore required considerable thoughts on how to analyze this data. For example, we can use Imputations or complete case analysis. However the methods employed will generally be dictated by the proportion of missing data,and  type of missing data (MAR, MCAR or MNAR).
+
+# Basic descriptive statistics and data Visualisation
+#For Continuous variable
+```{r}
+#Physical Activity
+describe(Final_data$PA_TOTAL_SHORT)
+
+#Boxplot for Physical activity 
+boxplot(Final_data$PA_TOTAL_SHORT, main = "Physical Activity")
+hist(Final_data$PA_TOTAL_SHORT)
+```
+The mean of physical activity is 2574.09 and the median is 1782. The difference between the two central tendancy along with value of skewness (1.7) indicate that the distribution of the physical activity is skewed. The standard deviation is 2656.19 with minimum value of 0 and maximum value of 19278. Boxplots showed potential outliers in the variables.`
+```{r}
+#Vegetable
+describe(Final_data$NUT_VEG_QTY)
+#Boxplots
+boxplot (Final_data$NUT_VEG_QTY, main='Vegetable quantity')
+hist(Final_data$NUT_VEG_QTY)
+```
