@@ -192,3 +192,18 @@ ggplot(Final_data, aes(x = PA_TOTAL_SHORT, y = NUT_FRUITS_QTY)) +
   theme_minimal()
 ```
 Based on the scatter plots, we can suspect no linear relationship between the variables. However, to confirm the findings it is important to do the correlation analysis that is robust to the outliers that is Spearman, Kendall correlation statistics
+
+#Correlation between continuous variables
+```{r}
+test<-cor.test(Final_data$PA_TOTAL_SHORT, Final_data$NUT_VEG_QTY)
+test$estimate
+test$p.value
+```
+
+```{r}
+test2<-cor.test(Final_data$PA_TOTAL_SHORT, Final_data$NUT_FRUITS_QTY)
+test2$estimate
+test2$p.value
+```
+
+
